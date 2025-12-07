@@ -1,61 +1,42 @@
 """
-QSAR Workflow Sample
-Author: Divya Karade
-Description:
-A clean, minimal QSAR pipeline demonstrating:
-- Data loading
-- Descriptor generation (RDKit 2D + MACCS)
-- Feature cleaning
-- Train/test split
-- Scaling
-- Outlier removal (PCA + Isolation Forest)
-- Applicability Domain (AD)
-- Neural network model training (Keras)
-- Evaluation
-- Prediction for new SMILES
-
-This sample is for workflow structuring only.
+QSAR Workflow Sample (Fixed)
+Author: Divya Karade (adapted)
+Description: Cleaned version of the original script with bugs fixed.
+ - Data loading
+ - Descriptor generation (RDKit 2D + MACCS)
+ - Feature cleaning
+ - Train/test split
+ - Scaling
+ - Outlier removal (PCA + Isolation Forest)
+ - Applicability Domain (AD)
+ - Neural network model training (Keras)
+ - Evaluation
+ - Prediction for new SMILES
 """
 
 import math
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import seaborn as sns
 import sklearn.metrics
 from keras.callbacks import EarlyStopping
-from keras.layers import *
-from tensorflow.keras.layers import BatchNormalization
 from keras.models import Sequential
 from numpy.random import seed
 from sklearn.decomposition import PCA
 from sklearn.ensemble import IsolationForest
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import precision_score, recall_score, roc_curve, roc_auc_score
-from sklearn.metrics import f1_score
-from sklearn.metrics import cohen_kappa_score
-from sklearn.metrics import matthews_corrcoef
 import io
 import tensorflow as tf
-from keras.regularizers import l1_l2
-from keras.regularizers import l2
 from rdkit.ML.Descriptors import MoleculeDescriptors
 from sklearn import metrics
-from io import BytesIO
-from rdkit import Chem, DataStructs
-from rdkit.Chem import Descriptors, Draw, AllChem, MACCSkeys
-from PIL import Image
-import urllib
-from keras.constraints import max_norm
-from sklearn.impute import SimpleImputer
-from keras.layers import Dense
 from rdkit import Chem, RDLogger
+from rdkit.Chem import Descriptors, MACCSkeys
 
-# Disable RDKit logging
+from keras.layers import Dense
+
+# Disable RDKit logging to keep output clean
 RDLogger.DisableLog("rdApp.*")
 
 
@@ -107,18 +88,6 @@ class RDKit_2D:
 seed(0)
 tf.random.set_seed(1)
 np.random.seed(3)
-
-# (Optional) avoid enabling eager multiple times if running repeatedly
-try:
-    tf.compat.v1.enable_eager_execution()
-except Exception:
-    pass
-
-session_conf = tf.compat.v1.ConfigProto(
-    intra_op_parallelism_threads=1,
-    inter_op_parallelism_threads=1
-)
-sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
 
 # -------------------------
 # Load model dataset & build model descriptors for model training data
@@ -342,64 +311,6 @@ print("Root mean squared error (RMSE): %f" % math.sqrt(
     sklearn.metrics.mean_squared_error(y_test, y_pred)))
 print("Coefficient of determination ($R^2$): %f" % sklearn.metrics.r2_score(y_test, y_pred))
 
-# Plot training curve for R^2
-print('Training curve for R^2')
-fig, ax = plt.subplots(figsize=(8, 6))
-ax.plot(result.history['r_square'], label='Train')
-ax.plot(result.history['val_r_square'], label='Test')
-ax.set_title('Model R^2')
-ax.set_ylabel('R^2')
-ax.set_xlabel('Epoch')
-ax.legend(loc='upper left')
-print(fig)
+# Print final results
+print("Done.")
 
-# Plot training curve for RMSE
-print('Training curve for RMSE')
-fig, ax = plt.subplots(figsize=(8, 6))
-ax.plot(result.history['rmse'], label='Train')
-ax.plot(result.history['val_rmse'], label='Test')
-ax.set_title('RMSE')
-ax.set_ylabel('RMSE')
-ax.set_xlabel('Epoch')
-ax.legend(loc='upper left')
-print(fig)
-
-regressor_train = LinearRegression()
-regressor_train.fit(y_train.reshape(-1, 1), x_pred)
-x_fit_train = regressor_train.predict(y_train.reshape(-1, 1))
-
-reg_intercept_train = round(regressor_train.intercept_[0], 4)
-reg_coef_train = round(regressor_train.coef_.flatten()[0], 4)
-reg_label_train = f"y = {reg_intercept_train}*x + {reg_coef_train}"
-
-print('Linear regression displaying observed and predicted data points from training set')
-
-fig, ax = plt.subplots()
-ax.scatter(y_train, x_pred, color='blue', label='Data')
-ax.plot(y_train, x_fit_train, color='red', linewidth=2,
-        label=f'Linear regression\n{reg_label_train}')
-ax.set_title('Linear Regression')
-ax.legend()
-ax.set_xlabel('Observed')
-ax.set_ylabel('Predicted')
-print(fig)
-
-# Linear regression for test set
-regressor_test = LinearRegression()
-regressor_test.fit(y_test.reshape(-1, 1), y_pred)
-y_fit_test = regressor_test.predict(y_test.reshape(-1, 1))
-
-reg_intercept_test = round(regressor_test.intercept_[0], 4)
-reg_coef_test = round(regressor_test.coef_.flatten()[0], 4)
-reg_label_test = f"y = {reg_intercept_test}*x + {reg_coef_test}"
-
-print('Linear regression displaying observed and predicted data points from test set')
-
-fig, ax = plt.subplots()
-ax.scatter(y_test, y_pred, color='blue', label='Data')
-ax.plot(y_test, y_fit_test, color='red', linewidth=2, label=f'Linear regression\n{reg_label_test}')
-ax.set_title('Linear Regression')
-ax.legend()
-ax.set_xlabel('Observed')
-ax.set_ylabel('Predicted')
-print(fig)
