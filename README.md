@@ -79,7 +79,6 @@ CCN,-7.1
 
 New molecules can be provided as a Python list:
 
-```python
 smiles = ["CCO"]  # Example: ethanol
 
 The script performs the following steps:
