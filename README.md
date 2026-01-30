@@ -64,10 +64,12 @@ This repository contains a **cleaned and fixed version** of an original QSAR scr
 ### Training Dataset (`SpikeRBD_DD.csv`)
 
 Required columns:
+
 - `smiles` — SMILES representation of molecules
 - `DockingScore` — Target regression value
 
 Example:
+
 ```csv
 smiles, DockingScore
 CCO,-6.5
