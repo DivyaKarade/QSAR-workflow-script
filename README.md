@@ -69,8 +69,6 @@ Required columns:
 - `DockingScore` — Target regression value
 
 Example:
-
-```csv
 smiles, DockingScore
 CCO,-6.5
 CCN,-7.1
