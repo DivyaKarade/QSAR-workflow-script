@@ -69,9 +69,11 @@ Required columns:
 
 Example:
 ```csv
-smiles,DockingScore
+smiles, DockingScore
 CCO,-6.5
 CCN,-7.1
+
+---
 
 ## 🧬 Predicting New Molecules
 
